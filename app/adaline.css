@@ -1,0 +1,107 @@
+/* Adaline design tokens for the project overview in section#works (components/works/WorksOverview.tsx).
+   From the vault prompt "Adaline Product Feature Overview V2", with three changes so it can live
+   inside this site:
+   - The colour tokens and utilities are global (new names only, nothing here clashes), but the
+     prompt's font, body and paragraph base rules are scoped to .adaline, so the rest of the site
+     keeps its own type.
+   - Akkurat is a commercial font and is not hot-linked from adaline.ai; Inter stands in for it.
+     Fragment Mono is the free Google font, loaded with next/font in app/layout.tsx.
+   - --nav-height is this site's navbar (3.5rem), not Adaline's 64px. */
+
+:root {
+  --pebble-50: 251 253 246; --pebble-100: 239 242 232; --pebble-200: 224 229 213; --pebble-300: 197 204 182;
+  --pebble-400: 151 161 134; --pebble-500: 107 120 96; --pebble-600: 80 92 71; --pebble-700: 46 59 40;
+  --pebble-800: 25 41 21; --pebble-900: 10 29 8; --pebble-950: 5 22 4;
+  --meadow-50: 251 253 246; --meadow-100: 236 242 223; --meadow-200: 215 232 181; --meadow-300: 177 204 122;
+  --meadow-400: 137 175 84; --meadow-500: 99 143 61; --meadow-600: 59 92 35; --meadow-700: 32 59 20;
+  --meadow-800: 19 41 14; --meadow-900: 10 29 8; --meadow-950: 5 22 4;
+  --grid-margin: 16px; --grid-gutter: 8px; --grid-max-width: 1920px;
+}
+@media (min-width: 768px) { :root { --grid-margin: 48px; --grid-gutter: 24px; } }
+@media (min-width: 1920px) { :root { --grid-max-width: 2048px; } }
+
+@theme {
+  --breakpoint-3xl: 120rem;
+  --color-pebble-50: rgb(var(--pebble-50)); --color-pebble-100: rgb(var(--pebble-100)); --color-pebble-200: rgb(var(--pebble-200));
+  --color-pebble-300: rgb(var(--pebble-300)); --color-pebble-400: rgb(var(--pebble-400)); --color-pebble-500: rgb(var(--pebble-500));
+  --color-pebble-600: rgb(var(--pebble-600)); --color-pebble-700: rgb(var(--pebble-700)); --color-pebble-800: rgb(var(--pebble-800));
+  --color-pebble-900: rgb(var(--pebble-900)); --color-pebble-950: rgb(var(--pebble-950));
+  --color-meadow-50: rgb(var(--meadow-50)); --color-meadow-100: rgb(var(--meadow-100)); --color-meadow-200: rgb(var(--meadow-200));
+  --color-meadow-300: rgb(var(--meadow-300)); --color-meadow-400: rgb(var(--meadow-400)); --color-meadow-500: rgb(var(--meadow-500));
+  --color-meadow-600: rgb(var(--meadow-600)); --color-meadow-700: rgb(var(--meadow-700)); --color-meadow-800: rgb(var(--meadow-800));
+  --color-meadow-900: rgb(var(--meadow-900)); --color-meadow-950: rgb(var(--meadow-950));
+}
+
+@utility atlas-web-lg { letter-spacing: -0.04em; font-size: 34px; line-height: 38px; @media (min-width: 768px) { font-size: 53px; line-height: 52px; } }
+@utility atlas-web-sm { font-size: 14px; line-height: 20px; }
+@utility atlas-web-mono { font-family: var(--font-mono); letter-spacing: 0.02em; font-size: 14px; font-variant-caps: all-small-caps; line-height: 14px; }
+
+/* Product-UI tokens (surface / on-surface / accent) used by the mock panels */
+@theme {
+  --color-surface-highest: #fdfefb; --color-surface-high: #fafbf7; --color-surface-base: #f8f9f5; --color-surface-low: #f1f3ef; --color-surface-lowest: #e9ede9;
+  --color-surface-tint-base: #344f3112;
+  --color-on-surface-highest: #2b390a; --color-on-surface-highest-subtle: #2b390ab3;
+  --color-on-surface-high: #2f3f1b;
+  --color-on-surface-base: #2e4320; --color-on-surface-base-subtle: #2e4320b3; --color-on-surface-base-disabled: #2e432066;
+  --color-primary: #4a6d47; --color-on-primary: #ffffff; --color-primary-container: #ddeabd; --color-on-primary-container: #2b390a;
+  --color-secondary: #2b6b5e; --color-error: #991e4b;
+  --color-outline: #e1e6df; --color-outline-strong: #c4cbc2;
+  --color-aux-accent-1: #cf2184; --color-aux-accent-1-outline: #ebabcf; --color-aux-accent-1-container: #feebf1;
+  --color-aux-accent-4: #886a00; --color-aux-accent-5: #4a6d47; --color-aux-accent-6: #2d784d;
+  --color-aux-accent-8: #3963b7; --color-aux-accent-9: #7e42a6; --color-aux-accent-9-outline: #dbcbe6; --color-aux-accent-9-container: #f0edff;
+  --perspective-distant: 1200px; --perspective-dramatic: 100px;
+  --container-grid: var(--grid-max-width);
+  --spacing-grid-margin: var(--grid-margin);
+}
+
+@utility atlas-web-base { font-size: 16px; line-height: 24px; @media (min-width: 768px) { font-size: 18px; line-height: 26px; } }
+@utility atlas-web-md { letter-spacing: -0.03em; font-size: 26px; line-height: 30px; @media (min-width: 768px) { letter-spacing: -0.02em; font-size: 30px; line-height: 34.7px; } }
+@utility atlas-product-xs { font-family: var(--font-sans); letter-spacing: 0.33px; font-size: 11px; line-height: 13px; }
+@utility atlas-product-sm { font-family: var(--font-sans); font-size: 13px; line-height: 17px; }
+@utility atlas-product-base { font-family: var(--font-sans); font-size: 15px; line-height: 21px; }
+@utility atlas-product-md { font-family: var(--font-sans); font-size: 23px; line-height: 28px; }
+@utility atlas-product-lg { font-family: var(--font-sans); letter-spacing: -1.29px; font-size: 43px; line-height: 42px; }
+@utility atlas-product-mono-sm { font-family: var(--font-mono); font-size: 12px; line-height: 17px; }
+
+/* The prompt's base rules, scoped to the section. */
+@layer base {
+  .adaline {
+    --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: var(--font-fragment-mono), "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    --nav-height: 3.5rem;
+    background-color: rgb(var(--pebble-50));
+    color: rgb(var(--pebble-900));
+    font-family: var(--font-sans);
+    font-feature-settings: "calt" 1, "kern" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  @media (min-width: 768px) { .adaline { font-size: 18px; line-height: 26px; } }
+  .adaline p { color: rgb(var(--pebble-500)); text-wrap: pretty; }
+}
+
+/* Match the rest of the site: Adaline's greenish off-white ground and near-white panels become the
+   site cream (--raw-color-cream-100, #f5f3ee) and its warm paper tones. The --color-* tokens are
+   re-declared here because they were already resolved at :root. */
+.adaline {
+  --pebble-50: 245 243 238;
+  --meadow-50: 245 243 238;
+  --color-pebble-50: rgb(245 243 238);
+  --color-meadow-50: rgb(245 243 238);
+  --color-surface-highest: #fbfaf7;
+  --color-surface-high: #f9f8f4;
+  --color-surface-base: #f8f7f3;
+  --color-surface-low: #f1efe9;
+  --color-surface-lowest: #ebe8e1;
+}
+
+/* globals.css still carries the old timeline's #works rules (dark ground, paddings, container);
+   undo them for this section. */
+#works.adaline {
+  background-color: rgb(var(--pebble-50));
+  color: rgb(var(--pebble-900));
+  container-type: normal;
+  padding: 0;
+}

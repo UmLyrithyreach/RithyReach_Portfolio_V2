@@ -1,5 +1,4 @@
 // The motion engine: one rAF ticker, react-spring's solver, scroll triggers, the text engine.
-import Lenis from "lenis";
 
 export const SPRINGS = Object.freeze({
   REVEAL: { tension: 90, friction: 26 },
@@ -87,27 +86,12 @@ export const ticker = (() => {
   };
 })();
 
-let lenisInstance: Lenis | null = null;
-
-export function getLenis(): Lenis | null {
-  return lenisInstance;
-}
-
-export function initLenis(): Lenis | null {
-  if (typeof window === "undefined" || isReducedMotion()) return null;
-  if (lenisInstance) return lenisInstance;
-  lenisInstance = new Lenis({ smoothWheel: true });
-  ticker.subscribe((time) => lenisInstance?.raf(time), () => 0);
-  return lenisInstance;
-}
-
 export function scrollToTarget(target: string | HTMLElement): void {
   if (typeof window === "undefined") return;
   const targetId = typeof target === "string" ? target : `#${target.id}`;
 
   if (targetId === "#home" || targetId === "#" || targetId === "") {
-    if (lenisInstance) lenisInstance.scrollTo(0);
-    else window.scrollTo({ top: 0, behavior: isReducedMotion() ? "auto" : "smooth" });
+    window.scrollTo({ top: 0, behavior: isReducedMotion() ? "auto" : "smooth" });
     return;
   }
 
@@ -116,8 +100,7 @@ export function scrollToTarget(target: string | HTMLElement): void {
     const layer0 = stack?.querySelector("[data-stack-layer]");
     if (stack && layer0) {
       const top = stack.getBoundingClientRect().top + window.scrollY + (layer0 as HTMLElement).offsetHeight;
-      if (lenisInstance) lenisInstance.scrollTo(top);
-      else window.scrollTo({ top, behavior: isReducedMotion() ? "auto" : "smooth" });
+      window.scrollTo({ top, behavior: isReducedMotion() ? "auto" : "smooth" });
       return;
     }
   }
@@ -136,11 +119,11 @@ export function scrollToTarget(target: string | HTMLElement): void {
       top += node.offsetTop;
     }
   } else {
-    top = el.getBoundingClientRect().top + window.scrollY;
+    const navOffset = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    top = el.getBoundingClientRect().top + window.scrollY - navOffset;
   }
 
-  if (lenisInstance) lenisInstance.scrollTo(top);
-  else window.scrollTo({ top, behavior: isReducedMotion() ? "auto" : "smooth" });
+  window.scrollTo({ top, behavior: isReducedMotion() ? "auto" : "smooth" });
 }
 
 export function readToken(name: string): string {

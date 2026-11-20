@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { projects, skillCategories } from "@/lib/data";
+import { email, projects, skillCategories, skillLevelLabel, skills, socials } from "@/lib/data";
 
 test.describe("Portfolio E2E Behaviors (G3)", () => {
   test("every section renders on /, has an h2, exactly one h1 on /, and no achievements section", async ({
@@ -44,9 +44,9 @@ test.describe("Portfolio E2E Behaviors (G3)", () => {
       await page.evaluate(() => window.scrollTo(0, 0));
       await page.waitForTimeout(100);
 
-      const navAnchor = page
-        .locator(`header nav[aria-label="Primary"] a[href="${hash}"]`)
-        .first();
+      // At the top of the page the shared bar is slid away (opacity 0, inert); the visible nav is the
+      // hero's own masthead.
+      const navAnchor = page.locator(`section#home nav[aria-label="Primary"] a[href="${hash}"]`);
       await navAnchor.click();
 
       await expect
@@ -107,55 +107,45 @@ test.describe("Portfolio E2E Behaviors (G3)", () => {
     await expect(menu).toBeHidden();
   });
 
-  test("skills filter changes the count of visible skill cards (11 total -> category subset -> 11 on All)", async ({
+  test("skills list shows all 11 technologies, each with its level word, grouped by category", async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     await expect(page.locator(".hero-veil")).toBeHidden({ timeout: 5000 });
 
-    const allCards = page.locator('[data-testid="skill-card"]');
-    await expect(allCards).toHaveCount(11);
+    const list = page.locator("section#skills dl.season-skills");
+    await expect(list.locator(".season-skill-name")).toHaveCount(skills.length);
+    await expect(list.locator("dt")).toHaveCount(skillCategories.length);
 
-    // Pick first category e.g. frontend
-    const cat = skillCategories[0].toLowerCase();
-    const filterBtn = page.locator(`[data-testid="skill-filter-${cat}"]`);
-    await filterBtn.click();
-
-    await expect
-      .poll(async () => allCards.count(), { timeout: 3000 })
-      .toBeLessThan(11);
-
-    const filteredCount = await allCards.count();
-    expect(filteredCount).toBeGreaterThan(0);
-
-    // Return to all
-    await page.click('[data-testid="skill-filter-all"]');
-    await expect
-      .poll(async () => allCards.count(), { timeout: 3000 })
-      .toBe(11);
+    for (const skill of skills) {
+      const item = list.locator(".season-skill", {
+        has: page.locator(".season-skill-name", { hasText: new RegExp(`^${skill.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") }),
+      });
+      await expect(item.locator(".season-skill-level")).toHaveText(new RegExp(skillLevelLabel(skill.level), "i"));
+    }
   });
 
-  test("both / (inside section#works) and /projects render all 5 project cards with h3 title and matching live/code hrefs", async ({
+  test("/projects renders every project card with h3 title and matching live/code hrefs (section#works on / shows the feature overview, no cards)", async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
 
     const routes = [
-      { path: "/", scope: "section#works " },
-      { path: "/projects", scope: "" },
+      { path: "/", scope: "section#works ", expected: [] as typeof projects },
+      { path: "/projects", scope: "", expected: projects },
     ];
 
-    for (const { path: routePath, scope } of routes) {
+    for (const { path: routePath, scope, expected } of routes) {
       await page.goto(routePath);
       if (routePath === "/") {
         await expect(page.locator(".hero-veil")).toBeHidden({ timeout: 5000 });
       }
 
       const cards = page.locator(`${scope}[data-testid="project-card"]`);
-      await expect(cards).toHaveCount(projects.length);
+      await expect(cards).toHaveCount(expected.length);
 
-      for (const project of projects) {
+      for (const project of expected) {
         const card = cards.filter({ hasText: project.title });
         await expect(card).toBeVisible();
 
@@ -179,43 +169,19 @@ test.describe("Portfolio E2E Behaviors (G3)", () => {
     }
   });
 
-  test("contact form inside section#contact empty submit shows 3 errors and filling valid clears them and shows status", async ({
+  test("contact footer offers the email button and every social link, opening in a new tab", async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     await expect(page.locator(".hero-veil")).toBeHidden({ timeout: 5000 });
 
-    const contactSection = page.locator("section#contact");
-    const submitBtn = contactSection.locator('button[type="submit"]');
-
-    // Submit empty
-    await submitBtn.click();
-
-    const formErrors = contactSection.locator('[data-testid="form-error"]');
-    await expect(formErrors).toHaveCount(3);
-
-    for (const err of await formErrors.all()) {
-      await expect(err).toHaveAttribute("role", "alert");
-      await expect(err).toBeVisible();
+    const contact = page.locator("section#contact");
+    await expect(contact.locator(`a[href="mailto:${email}"]`).first()).toBeAttached();
+    for (const url of Object.values(socials)) {
+      const link = contact.locator(`a[href="${url}"]`).first();
+      await expect(link).toBeAttached();
+      await expect(link).toHaveAttribute("target", "_blank");
     }
-
-    const successStatus = contactSection.locator('[role="status"]');
-    await expect(successStatus).toHaveCount(0);
-
-    // Fill valid data
-    await contactSection.locator('input[name="name"]').fill("Reach Kaizen");
-    await contactSection
-      .locator('input[name="email"]')
-      .fill("reach@example.com");
-    await contactSection
-      .locator('textarea[name="message"]')
-      .fill("Hello Reach, let us build something great together!");
-
-    await submitBtn.click();
-
-    await expect(formErrors).toHaveCount(0);
-    await expect(contactSection.locator('[role="status"]')).toHaveCount(1);
-    await expect(contactSection.locator('[role="status"]')).toBeVisible();
   });
 });

@@ -1,5 +1,8 @@
 import path from "node:path";
 import { test, expect } from "@playwright/test";
+import { projects } from "@/lib/data";
+
+// Home's works section is the feature overview (no project cards); /projects shows every project.
 
 const widths = [360, 390, 768, 1024, 1280, 1440];
 const routes = ["/", "/projects"];
@@ -47,7 +50,8 @@ test.describe("Responsive Checks, Overflow & Screenshots (G4 + G5)", () => {
         // Collect boundingBoxes of all [data-testid=project-card] and assert no pair intersects
         const cards = page.locator('[data-testid="project-card"]');
         const count = await cards.count();
-        expect(count, `Expected 5 project cards on ${route}`).toBe(5);
+        const expected = route === "/" ? 0 : projects.length;
+        expect(count, `Expected ${expected} project cards on ${route}`).toBe(expected);
 
         const boxes: Array<{
           x: number;

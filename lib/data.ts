@@ -66,7 +66,7 @@ export const projects: Project[] = [
     tech: ["Next.js 16", "React 19", "GSAP", "Lenis", "Tailwind CSS v4"],
     stackSummary: "next.js 16 · react 19 · gsap",
     live: "https://asip-redesign-eyca.vercel.app/",
-    image: "/image/projects/asipredesign.png",
+    image: "/image/projects/asipredesign.webp",
   },
   {
     id: "automata-simulation",
@@ -88,7 +88,7 @@ export const projects: Project[] = [
     stackSummary: "react · express · sqlite · c++",
     live: "https://automata-fawn.vercel.app",
     code: "https://github.com/ShurikenBy6YoungTechStudents/automata-project",
-    image: "/image/projects/automata-project.png",
+    image: "/image/projects/automata-project.webp",
   },
   {
     id: "samki-digital-market",
@@ -113,7 +113,7 @@ export const projects: Project[] = [
     stackSummary: "next.js 16 · sanity · clerk · stripe",
     live: "https://full-stack-ecommerce-tb3i.vercel.app",
     code: "https://github.com/YongVuthivathnakk/samki-digital-market-next-app",
-    image: "/image/projects/capstone.png",
+    image: "/image/projects/capstone.webp",
   },
   {
     id: "portfolio-2",
@@ -134,7 +134,7 @@ export const projects: Project[] = [
     stackSummary: "next.js · tailwind css · framer motion",
     live: "https://rithyreach-portfolio.vercel.app",
     code: "https://github.com/UmLyrithyreach/my-portfolio-nextjs",
-    image: "/image/projects/portfolio.png",
+    image: "/image/projects/portfolio.webp",
   },
   {
     id: "khodkquiz",
@@ -155,7 +155,7 @@ export const projects: Project[] = [
     tech: ["React", "Express.js", "PostgreSQL", "JWT", "Node.js"],
     stackSummary: "react · express · postgresql · jwt",
     code: "https://github.com/PhaySometh/KhodKquiz",
-    image: "/image/projects/KhodKquiz.png",
+    image: "/image/projects/KhodKquiz.webp",
   },
 ];
 
@@ -185,4 +185,14 @@ export const socials = {
 };
 
 export const email = "umlyrithyreach@gmail.com";
-export const connectCopy = "I'm looking forward to being a part of your team! Let me help you develop your ideas into an internet reality.";
+
+/** Projects whose tech list names this skill (version suffixes like "React 19" still match). */
+export function projectsUsing(skillName: string): Project[] {
+  const key = skillName.toLowerCase();
+  return projects.filter((p) =>
+    p.tech.some((t) => {
+      const tech = t.toLowerCase();
+      return tech === key || tech.startsWith(`${key} `);
+    }),
+  );
+}

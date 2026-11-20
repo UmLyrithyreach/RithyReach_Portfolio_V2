@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Oswald, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Oswald, Space_Grotesk, JetBrains_Mono, Playfair_Display, Inter, Fragment_Mono } from "next/font/google";
 import "./globals.css";
 import "./hero.css";
 
@@ -24,6 +24,29 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+// The works section (Adaline feature overview): Inter stands in for Adaline's Akkurat.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const fragmentMono = Fragment_Mono({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-fragment-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Reach — Web Developer Portfolio",
   description:
@@ -39,7 +62,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${oswald.variable} ${jetbrainsMono.variable}`}
+      className={`${spaceGrotesk.variable} ${oswald.variable} ${jetbrainsMono.variable} ${playfair.variable} ${inter.variable} ${fragmentMono.variable}`}
     >
       <body>{children}</body>
     </html>
