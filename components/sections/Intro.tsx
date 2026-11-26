@@ -7,6 +7,10 @@
 // moving from panel 1 to panel 2 feels like ordinary scrolling.
 // On one scroll timeline, in viewport heights of page scroll (a, the same clock as the hero's exit):
 //   0.45 -> 0.65 the stage slides in from the right under the HELLO sweep, as the hero fades;
+//   0.8 -> 1.8   the "ABOUT" box, styled like the expand boxes (ExpandSection.tsx): a dark box
+//                slides in from the right as the HELLO sweep leaves, grows from 75% x 60% to fill
+//                the screen with "ABOUT" scaling up inside, then slides off to the left onto
+//                panel 1 (everything below is pushed back by ABOUT_LEN);
 //   0.75 -> 1.35 panel 1 ("who I am"): the headline fills in word by word from its faint ghost,
 //                the CADT photo settles in with the word "CADT", then the paragraph fades up;
 //   1.6 -> 2.6   the track scrolls one screen: panel 1 leaves upward, panel 2 comes up under it;
@@ -60,19 +64,28 @@ const SCHOOL = {
 // The timeline (see the header).
 const SLIDE_FROM = 0.45;
 const SLIDE_TO = 0.65;
-const T1_FROM = 0.75;
-const T1_TO = 1.35;
-const BODY1_FROM = 1.15;
-const BODY1_TO = 1.45;
-const TRACK_FROM = 1.6;
-const TRACK_TO = 2.6; // exactly one viewport of scroll: the track moves at page speed
-const T2_FROM = 2.2;
-const T2_TO = 2.75;
-const COLS_FROM = 2.55;
+/** The "ABOUT" title card: held while the stage arrives, then it expands past the viewer. */
+const ABOUT_IN_FROM = 0.8; // slides in from the right; the HELLO sweep (HelloSweep.tsx) is gone by 1.0
+const ABOUT_IN_TO = 1.0;
+const ABOUT_GROW_FROM = 1.0; // 75% x 60% -> full screen
+const ABOUT_GROW_TO = 1.5;
+const ABOUT_OUT_FROM = 1.6; // slides off to the left, uncovering panel 1
+const ABOUT_OUT_TO = 1.85;
+/** Everything after the title card is pushed back by this much scroll. */
+const ABOUT_LEN = 1.05;
+const T1_FROM = 0.75 + ABOUT_LEN;
+const T1_TO = 1.35 + ABOUT_LEN;
+const BODY1_FROM = 1.15 + ABOUT_LEN;
+const BODY1_TO = 1.45 + ABOUT_LEN;
+const TRACK_FROM = 1.6 + ABOUT_LEN;
+const TRACK_TO = 2.6 + ABOUT_LEN; // exactly one viewport of scroll: the track moves at page speed
+const T2_FROM = 2.2 + ABOUT_LEN;
+const T2_TO = 2.75 + ABOUT_LEN;
+const COLS_FROM = 2.55 + ABOUT_LEN;
 const COL_STEP = 0.12;
 const COL_LEN = 0.3;
 /** Panel 2 is fully shown by ~3.1; it then holds, fully readable, for ~0.7 screen of scroll before it falls. */
-const FALL_AT = 3.8;
+const FALL_AT = 3.8 + ABOUT_LEN;
 /** Scroll back this far above FALL_AT to bring the message back (so it never flickers at the edge). */
 const REBUILD_GAP = 0.08;
 /** The pile stays pinned this much longer (viewport heights of scroll), then the stage scrolls away. */
@@ -156,6 +169,18 @@ export default function Intro() {
   const eyebrow2 = useTransform(a, ramp(T2_FROM - 0.15, T2_FROM + 0.1));
   const text1 = reduceMotion ? shown : t1;
   const text2 = reduceMotion ? shown : t2;
+
+  // The title card: in from the right, grow to full screen (the box's size, corners and the word's
+  // scale all read --about-grow in globals.css), then out to the left.
+  const aboutGrow = useTransform(a, ramp(ABOUT_GROW_FROM, ABOUT_GROW_TO));
+  const aboutX = useTransform(a, (v) => {
+    const inP = smoothstep(ABOUT_IN_FROM, ABOUT_IN_TO, v);
+    const outP = smoothstep(ABOUT_OUT_FROM, ABOUT_OUT_TO, v);
+    return `${100 * (1 - inP) - 100 * outP}vw`;
+  });
+  // The cream backdrop hides panel 1 until the box covers the screen, so the box slides off onto it.
+  const aboutBackdrop = useTransform(a, (v) => (v < ABOUT_GROW_TO ? 1 : 0));
+  const aboutCue = useTransform(aboutGrow, [0, 0.15], [1, 0]);
 
   // The photo settles in as "CADT" is revealed, and stays for both panels.
   const photoIn = useTransform(text1, [SCHOOL_WORD / WORDS_1.length, Math.min(1, (SCHOOL_WORD + 1) / WORDS_1.length)], [0, 1]);
@@ -269,6 +294,18 @@ export default function Intro() {
             </motion.figure>
           </div>
         </div>
+
+        {!reduceMotion && (
+          <div className="intro-about" aria-hidden="true">
+            <motion.div className="intro-about-backdrop" style={{ opacity: aboutBackdrop }} />
+            <motion.div className="intro-about-box" style={{ x: aboutX, "--about-grow": aboutGrow } as unknown as CSSProperties}>
+              <span className="intro-about-word">About</span>
+              <motion.span className="intro-about-cue" style={{ opacity: aboutCue }}>
+                Keep scrolling
+              </motion.span>
+            </motion.div>
+          </div>
+        )}
       </motion.div>
     </section>
   );

@@ -183,8 +183,10 @@ export default function Hero() {
           screens, over the dark bench at the bottom on phones (hero.css). */}
       <div className="hero-header-copy">
         <p className="hero-eyebrow">
-          <span className="hero-eyebrow-dot" aria-hidden="true" />
-          Software engineer · CADT, Cambodia
+          <span className="hero-eyebrow-rule" aria-hidden="true" />
+          <span className="hero-eyebrow-role">Software engineer</span>
+          <span className="hero-eyebrow-sep" aria-hidden="true" />
+          <span className="hero-eyebrow-place">CADT, Cambodia</span>
         </p>
         <h1 className="hero-headline">
           <span className="hero-headline-line">Hi, I&apos;m Reach.</span>
