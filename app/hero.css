@@ -1,11 +1,25 @@
 /* ==========================================================================
-   Hero — Mindly-inspired Spatial Glassmorphism Hero for RithyReach
+   Hero — full-bleed lofi video scene (a looping AI clip of me on a seaside
+   train at golden hour) with the copy laid over the calm parts of the frame.
    Uses px / vw / vh units so globals.css's 1441-1920px html font-size rule
-   never shrinks the hero layout, and keeps height strictly <= 100dvh so
-   Pager.tsx never applies zoom < 1.
+   never shrinks the hero layout, and keeps height strictly <= 100dvh.
+
+   Frame map of the clip (1920x1080): me on the left (x 10-47%), the sun at
+   x 38% / y 40%, the sea and islands on the right (x 50-90%, y 40-65%),
+   the dark navy bench across the bottom (y 70-100%). So:
+   - wide screens: copy on the right over the sea/bench, clock top right;
+   - portrait screens: the crop slides left to keep me in view
+     (object-position 24%) and the copy drops to the bottom, over the bench.
    ========================================================================== */
 
 [data-hero] {
+  --hero-ink: #fbf7f0;              /* warm white, matches the sunset */
+  --hero-ink-soft: rgb(251 247 240 / 0.9);
+  --hero-ink-faint: rgb(251 247 240 / 0.66);
+  --hero-night: 14 16 32;           /* bench navy, used for the scrims */
+  --hero-sun: #ffb36b;
+  --hero-pad-x: clamp(20px, 5.5vw, 120px);
+
   position: relative;
   isolation: isolate;
   width: 100%;
@@ -13,16 +27,9 @@
   max-height: 100dvh;
   min-height: 0;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 68% 54% at 50% 64%, rgba(255, 255, 255, 0.96) 0%, rgba(250, 249, 245, 0) 76%),
-    radial-gradient(circle at 16% 24%, rgba(244, 241, 234, 0.75) 0%, transparent 55%),
-    radial-gradient(circle at 84% 28%, rgba(242, 239, 232, 0.75) 0%, transparent 55%),
-    linear-gradient(180deg, #faf9f5 0%, #f5f3ee 62%, #eeece5 100%);
-  color: #141413;
+  background: #1b1a2a; /* behind the poster for the first paint */
+  color: var(--hero-ink);
   font-family: var(--font-sans);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   box-sizing: border-box;
   user-select: none;
 }
@@ -59,984 +66,315 @@
 .hero-corner--bl { bottom: 0; left: 0; transform: scale(-1); }
 .hero-corner--br { bottom: 0; right: 0; transform: scaleY(-1); }
 
+/* --- The scene ----------------------------------------------------------- */
 
-/* --- Top Masthead / Navbar ----------------------------------------------- */
-
-[data-hero] .hero-masthead {
-  position: relative;
-  z-index: 45;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin: 0 auto;
-  padding: 20px 24px 8px;
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-
-@media (min-width: 640px) {
-  [data-hero] .hero-masthead {
-    padding: clamp(24px, 3.6vh, 44px) clamp(32px, 5.5vw, 120px) 10px;
-  }
-}
-
-/* Original navbar (restored from the last commit) */
-[data-hero] .hero-logo,
-[data-hero-sheet] .hero-logo {
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--foreground);
-  text-decoration: none;
-  white-space: nowrap;
-}
-[data-hero] .hero-logo-mark,
-[data-hero-sheet] .hero-logo-mark { color: var(--accent); }
-
-[data-hero] .hero-nav {
-  display: none;
+[data-hero] .hero-media {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-[data-hero] .hero-nav ul { display: flex; gap: 4rem; }
-[data-hero] .hero-nav a,
-[data-hero] .hero-talk {
-  font-size: var(--type-label);
-  text-transform: uppercase;
-  line-height: 0.9;
-  color: var(--foreground);
-  transition: color 150ms cubic-bezier(0.2, 0, 0, 1);
-}
-[data-hero] .hero-nav a:hover,
-[data-hero] .hero-talk:hover { color: var(--accent); }
-[data-hero] .hero-talk { display: none; font-weight: 700; white-space: nowrap; }
-
-[data-hero] .hero-burger,
-[data-hero-sheet] .hero-sheet-close {
-  appearance: none;
-  background: none;
-  border: 0;
-  color: inherit;
-  cursor: pointer;
-  padding: 0.5rem;
-  margin-right: -0.5rem;
-}
-[data-hero] .hero-burger {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3125rem;
-}
-[data-hero] .hero-burger span {
-  display: block;
-  width: 1.5rem;
-  height: 1px;
-  background: var(--foreground);
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 }
 
-@media (min-width: 1280px) {
-  [data-hero] .hero-nav { display: block; }
-  [data-hero] .hero-talk { display: inline; }
-  [data-hero] .hero-burger { display: none; }
+[data-hero] .hero-media-poster,
+[data-hero] .hero-media-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  /* 16:9 and wider show the whole frame; narrower screens crop toward me, not the centre. */
+  object-position: 24% 50%;
 }
 
-/* Keyboard focus only */
-[data-hero] .hero-nav a:focus-visible,
-[data-hero] .hero-talk:focus-visible,
-[data-hero] .hero-btn-primary:focus-visible,
-[data-hero] .hero-btn-secondary:focus-visible,
-[data-hero] .hero-orbit-toggle:focus-visible {
-  outline: 2px solid var(--foreground);
-  outline-offset: 2px;
+/* The loop fades in over the still frame only once it is really playing (no black flash). */
+[data-hero] .hero-media-video {
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+[data-hero] .hero-media-video[data-shown] { opacity: 1; }
+
+/* Speed streaks (components/hero/HeroStreaks.tsx): over the scene, under the copy and the clock. */
+[data-hero] .hero-streaks {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+[data-hero] .hero-motion-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* Readability scrim: darkens the sea/bench under the copy, and the sky under the clock,
+   while leaving me and the sun bright. Contrast measured on the brightest frames (95th-percentile background): body copy >= 4.5:1. */
+[data-hero] .hero-media-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to left, rgb(var(--hero-night) / 0.78) 0%, rgb(var(--hero-night) / 0.52) 36%, rgb(var(--hero-night) / 0) 60%),
+    linear-gradient(to top, rgb(var(--hero-night) / 0.55) 0%, rgb(var(--hero-night) / 0) 38%),
+    linear-gradient(to bottom, rgb(var(--hero-night) / 0.35) 0%, rgb(var(--hero-night) / 0) 22%);
 }
 
-/* --- Editorial Center Copy & CTAs ---------------------------------------- */
+/* --- Copy ----------------------------------------------------------------- */
 
 [data-hero] .hero-header-copy {
-  position: relative;
+  position: absolute;
   z-index: 35;
+  right: var(--hero-pad-x);
+  top: 50%;
+  translate: 0 -38%;
+  width: min(46vw, 880px);
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  text-shadow: 0 1px 18px rgb(var(--hero-night) / 0.45);
+}
+
+[data-hero] .hero-eyebrow {
+  display: inline-flex;
   align-items: center;
-  text-align: center;
-  padding: 6px 24px 0;
-  margin-top: clamp(4px, 2.4vh, 40px);
-  flex-shrink: 0;
+  gap: 10px;
+  margin-bottom: clamp(14px, 2.2vh, 26px);
+  padding: 8px 14px;
+  border-radius: 9999px;
+  border: 1px solid rgb(251 247 240 / 0.22);
+  background: rgb(var(--hero-night) / 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hero-ink-soft);
+  text-shadow: none;
+}
+[data-hero] .hero-eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--hero-sun);
+  box-shadow: 0 0 10px var(--hero-sun);
 }
 
 [data-hero] .hero-headline {
   font-family: var(--font-playfair), Georgia, "Times New Roman", serif;
   font-weight: 400;
-  font-size: clamp(40px, min(6.3vw, 9.4vh), 132px);
-  line-height: 1;
+  font-size: clamp(44px, min(4.6vw, 8.4vh), 112px);
+  line-height: 1.02;
   letter-spacing: -0.03em;
-  color: #141413;
-  max-width: 14ch;
+  color: var(--hero-ink);
 }
-
 [data-hero] .hero-headline-line {
   display: block;
+  white-space: nowrap;
 }
-
 [data-hero] .hero-headline-italic {
   display: block;
   font-style: italic;
-  font-weight: 400;
   letter-spacing: -0.025em;
   margin-top: 2px;
+  color: #ffd9b0; /* sunset-tinted; display size, so 3:1 is the bar and it clears 4.5:1 on the brightest frame */
 }
 
 [data-hero] .hero-subtitle {
-  margin-top: clamp(12px, 1.6vh, 20px);
-  max-width: 31em;
-  font-family: var(--font-sans);
-  font-size: clamp(14px, min(1.25vw, 1.95vh), 21px);
-  line-height: 1.58;
-  color: #6e6d68;
-  font-weight: 400;
+  margin-top: clamp(14px, 2vh, 24px);
+  max-width: 26em;
+  font-size: clamp(15px, min(1.15vw, 2vh), 19px);
+  line-height: 1.6;
+  color: var(--hero-ink-soft);
 }
 
-[data-hero] .hero-cta-row {
-  margin-top: clamp(16px, 3.2vh, 40px);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-}
-
-[data-hero] .hero-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: clamp(44px, 5.4vh, 60px);
-  padding: 12px clamp(22px, 1.8vw, 32px);
-  border-radius: 9999px;
-  background: #141413;
-  color: #ffffff;
-  font-size: clamp(14px, min(1vw, 1.7vh), 17px);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  box-shadow:
-    0 12px 28px -4px rgba(20, 20, 19, 0.24),
-    0 3px 8px rgba(20, 20, 19, 0.12);
-  scale: 1;
-  translate: 0px;
-  transition: background-color 180ms ease-out, scale 180ms ease-out, translate 180ms ease-out;
-}
-
-[data-hero] .hero-btn-primary:hover {
-  background: #272725;
-  translate: 0 -1px;
-  scale: 1.03;
-}
-
-[data-hero] .hero-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: clamp(44px, 5.4vh, 60px);
-  padding: 8px clamp(20px, 1.6vw, 28px) 8px 10px;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(20, 20, 19, 0.08);
-  color: #141413;
-  font-size: clamp(14px, min(1vw, 1.7vh), 17px);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.045),
-    inset 0 1px 1px rgba(255, 255, 255, 0.92);
-  scale: 1;
-  translate: 0px;
-  transition: background-color 180ms ease-out, scale 180ms ease-out, translate 180ms ease-out;
-}
-
-[data-hero] .hero-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.96);
-  translate: 0 -1px;
-  scale: 1.03;
-}
-
-[data-hero] .hero-play-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 9999px;
-  background: #141413;
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-/* --- Rotating Stamp Badge (Top Right) ------------------------------------ */
+/* --- Upper right: local time --- */
 
 [data-hero] .hero-stamp {
   display: none;
   position: absolute;
-  right: 7.5%;
-  top: 15%;
+  right: var(--hero-pad-x);
+  top: clamp(40px, 9vh, 96px);
   z-index: 32;
-  width: clamp(92px, 6.6vw, 136px);
-  aspect-ratio: 1;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-@media (min-width: 1024px) {
-  [data-hero] .hero-stamp {
-    display: flex;
-  }
-}
-
-[data-hero] .hero-stamp-ring {
-  width: 100%;
-  height: 100%;
-  color: #2c2c29;
-  transform-origin: center;
-  @media (prefers-reduced-motion: no-preference) {
-    animation: hero-stamp-spin 22s linear infinite;
-  }
-}
-
-[data-hero] .hero-stamp-star {
-  position: absolute;
-  width: 30%;
-  height: 30%;
-  color: #141413;
-}
-
-@keyframes hero-stamp-spin {
-  from {
-    rotate: 0deg;
-  }
-  to {
-    rotate: 360deg;
-  }
-}
-
-/* --- Left & Right Floating Callout Glass Cards --------------------------- */
-
-[data-hero] .hero-float-card {
-  display: none;
-  position: absolute;
-  z-index: 34;
-  width: clamp(200px, min(15vw, 27vh), 300px);
-  padding: clamp(20px, 1.6vw, 30px) clamp(20px, 1.6vw, 30px) clamp(22px, 1.8vw, 32px);
-  border-radius: 28px;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.96) 0%,
-    rgba(253, 252, 249, 0.9) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.94);
-  box-shadow:
-    0 24px 54px -12px rgba(20, 20, 19, 0.08),
-    0 6px 16px rgba(20, 20, 19, 0.035),
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.98);
-  box-sizing: border-box;
-  scale: 1;
-  translate: 0px;
-  transition: scale 280ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 280ms ease-out;
-}
-
-[data-hero] .hero-float-card:hover {
-  scale: 1.05;
-  box-shadow:
-    0 28px 64px -10px rgba(20, 20, 19, 0.13),
-    0 8px 20px rgba(20, 20, 19, 0.05),
-    inset 0 1.5px 1px rgba(255, 255, 255, 1);
-}
-
-@media (min-width: 1180px) {
-  [data-hero] .hero-float-card {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-[data-hero] .hero-float-card--left {
-  left: clamp(32px, 7vw, 150px);
-  top: 26%;
-  rotate: -3deg;
-  @media (prefers-reduced-motion: no-preference) {
-    animation: hero-float-left 5.8s ease-in-out infinite;
-  }
-}
-
-[data-hero] .hero-float-card--right {
-  right: clamp(32px, 7.5vw, 160px);
-  top: 37%;
-  rotate: 3deg;
-  @media (prefers-reduced-motion: no-preference) {
-    animation: hero-float-right 6.4s ease-in-out infinite;
-  }
-}
-
-@keyframes hero-float-left {
-  0%, 100% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 0 -7px;
-  }
-}
-
-@keyframes hero-float-right {
-  0%, 100% {
-    translate: 0 0;
-  }
-  50% {
-    translate: 0 -8px;
-  }
-}
-
-[data-hero] .hero-float-icon-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 9999px;
-  background: rgba(240, 238, 232, 0.92);
-  border: 1px solid rgba(20, 20, 19, 0.06);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #141413;
-}
-
-[data-hero] .hero-float-title {
-  margin-top: clamp(14px, 1.6vh, 22px);
-  font-size: clamp(16px, min(1.2vw, 2.1vh), 22px);
-  font-weight: 600;
-  line-height: 1.24;
-  letter-spacing: -0.02em;
-  color: #141413;
-}
-
-[data-hero] .hero-float-desc {
-  margin-top: 8px;
-  font-size: clamp(13px, min(0.9vw, 1.6vh), 16px);
-  line-height: 1.45;
-  color: #82817b;
-}
-
-[data-hero] .hero-avatar-stack {
-  display: flex;
-  align-items: center;
-}
-
-[data-hero] .hero-avatar-item {
-  width: 34px;
-  height: 34px;
-  border-radius: 9999px;
-  border: 2.5px solid #ffffff;
-  object-fit: cover;
-  margin-left: -8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  background: #dcdad3;
-}
-
-[data-hero] .hero-avatar-item:first-child {
-  margin-left: 0;
-}
-
-[data-hero] .hero-avatar-plus {
-  width: 34px;
-  height: 34px;
-  border-radius: 9999px;
-  border: 2.5px solid #ffffff;
-  background: #f5f4f0;
-  color: #141413;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: -8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-/* --- Connector lines (paths are laid out in px by Hero.tsx) -------------- */
-
-[data-hero] .hero-connectors {
-  display: none;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 15;
-  pointer-events: none;
-  overflow: visible;
-}
-
-[data-hero] .hero-connectors path {
-  fill: none;
-  stroke: rgba(20, 20, 19, 0.16);
-  stroke-width: 1.1;
-}
-
-@media (min-width: 1180px) {
-  [data-hero] .hero-connectors {
-    display: block;
-  }
-}
-
-/* --- Centerpiece stage: portrait + 3D halo --------------------------------
-   The stage is everything below the CTAs. It is a size container, so the
-   portrait is sized from the space actually left (cqh) and its head always
-   starts just under the buttons, overflowing the bottom edge at the chest. */
-
-[data-hero] .hero-stage {
-  position: relative;
-  flex: 1 1 auto;
-  width: 100%;
-  min-height: 0;
-  container-type: size;
-  /* Portrait height: a little taller than the stage so the suit runs off the bottom. */
-  --ph: min(122cqh, 130cqw);
-}
-
-/* Soft white halo behind the head */
-[data-hero] .hero-stage-glow {
-  position: absolute;
-  left: 50%;
-  top: 2%;
-  transform: translateX(-50%);
-  width: min(1100px, 96vw);
-  height: 110%;
-  border-radius: 9999px;
-  background: radial-gradient(
-    ellipse at 50% 42%,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.55) 38%,
-    rgba(245, 243, 238, 0) 70%
-  );
-  z-index: 5;
-  pointer-events: none;
-}
-
-/* The portrait's box. Hero.tsx sets transform: translateX(-57%) (+ parallax) so the
-   skull, not the image box, is centred. Its own stacking context (z 20) holds both
-   the portrait and the halo cards, which sort around the portrait inside it. */
-[data-hero] .hero-figure {
-  position: absolute;
-  z-index: 20;
-  left: 50%;
-  /* ~6% of the image above the hair is transparent; tuck it under the CTAs. */
-  top: calc(clamp(6px, 2cqh, 22px) - var(--ph) * 0.055);
-  height: var(--ph);
-  aspect-ratio: 1240 / 1269;
-  transform: translateX(-57%);
-  will-change: transform;
-}
-
-[data-hero] .hero-portrait-img {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  object-fit: contain;
-  filter: grayscale(100%) contrast(1.06) brightness(1.03) drop-shadow(0 30px 50px rgba(0, 0, 0, 0.14));
-  pointer-events: none;
-}
-
-/* Cursor fluid. Inside the figure's stacking context: above the portrait (20),
-   below the front halo cards (30+). Hero.tsx sizes it to cover the whole hero. */
-[data-hero] .hero-fluid {
-  position: absolute;
-  z-index: 21;
-  pointer-events: none;
-}
-
-/* Soft fade so the suit melts into the bottom edge */
-[data-hero] .hero-bottom-fade {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 14%;
-  height: 22%;
-  background: linear-gradient(to bottom, rgb(245 243 238 / 0) 0%, var(--background) 100%);
-  z-index: 25;
-  pointer-events: none;
-}
-
-/* --- 3D halo cards -----------------------------------------------------------
-   Sizes are drawn for a 265px halo radius; Hero.tsx scales each card with the
-   portrait, so these px values never need breakpoints. */
-
-[data-hero] .hero-orbit-anchor {
-  position: absolute;
-  /* Centre of the skull at eye level, in the portrait image */
-  left: 57%;
-  top: 26.5%;
-  width: 0;
-  height: 0;
-}
-
-/* Halo tokens — primitive → semantic → component.
-   Cards are one monochrome material (paper, ink, hairline) so the halo reads as
-   part of the portrait, not a sticker sheet. */
-[data-hero] {
-  /* Primitive */
-  --hero-ink-900: #141413;
-  --hero-ink-600: #57564f;
-  --hero-ink-400: #8a8982;
-  --hero-paper-50: #fcfbf8;
-  --hero-ink-alpha-08: rgba(20, 20, 19, 0.08);
-  --hero-ink-alpha-14: rgba(20, 20, 19, 0.14);
-  --hero-ink-alpha-30: rgba(20, 20, 19, 0.3);
-
-  /* Semantic */
-  --hero-fg: var(--hero-ink-900);
-  --hero-fg-muted: var(--hero-ink-600);
-  --hero-fg-subtle: var(--hero-ink-400);
-  /* Near-opaque instead of frosted: a backdrop blur over the moving fluid re-renders every frame. */
-  --hero-surface: color-mix(in srgb, var(--hero-paper-50) 93%, transparent);
-  --hero-hairline: var(--hero-ink-alpha-08);
-  --hero-hairline-strong: var(--hero-ink-alpha-14);
-}
-
-[data-hero] .hero-orbit-anchor {
-  /* Component */
-  --halo-surface: var(--hero-surface);
-  --halo-border: var(--hero-hairline);
-  --halo-border-hover: var(--hero-hairline-strong);
-  --halo-radius: 14px;
-  --halo-radius-inner: 9px;
-  --halo-pad: 12px;
-  --halo-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 18px 40px -18px rgba(20, 20, 19, 0.28);
-  --halo-fg: var(--hero-fg);
-  --halo-fg-muted: var(--hero-fg-muted);
-  --halo-fg-subtle: var(--hero-fg-subtle);
-  --halo-font-label: var(--font-mono);
-  --halo-font-title: var(--font-playfair), Georgia, serif;
-  --halo-frame-line: var(--hero-ink-alpha-30);
-}
-
-[data-hero] .halo-card {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: block;
-  box-sizing: border-box;
-  transform-origin: center center;
-  will-change: transform, opacity;
-  color: var(--halo-fg);
-  border-radius: var(--halo-radius);
-  pointer-events: none;
-}
-
-[data-hero] .halo-card--work,
-[data-hero] .halo-card--stack {
-  background: var(--halo-surface);
-  border: 1px solid var(--halo-border);
-  box-shadow: var(--halo-shadow);
-}
-
-[data-hero] .halo-body {
-  position: relative;
-  height: 100%;
-}
-
-[data-hero] .halo-mono {
-  font-family: var(--halo-font-label);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--halo-fg-subtle);
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
   line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hero-ink-faint);
+  text-shadow: 0 1px 10px rgb(var(--hero-night) / 0.5);
+  pointer-events: none;
 }
-
-/* Work: a real project screenshot with a contact-sheet caption */
-[data-hero] .halo-card--work {
-  width: 214px;
-  padding: 6px;
+@media (min-width: 1024px) {
+  [data-hero] .hero-stamp { display: flex; }
 }
-
-[data-hero] .halo-shot {
-  position: relative;
-  aspect-ratio: 16 / 8;
-  border-radius: var(--halo-radius-inner);
-  overflow: hidden;
-  background: var(--hero-ink-alpha-08);
+[data-hero] .hero-locale-time {
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  color: var(--hero-ink);
+  font-variant-numeric: tabular-nums;
 }
+[data-hero] .hero-locale-zone { font-size: 12px; letter-spacing: 0.08em; color: var(--hero-ink-faint); }
 
-[data-hero] .halo-shot-img {
-  object-fit: cover;
-  object-position: top center;
-  filter: grayscale(1) contrast(1.05);
-}
-
-[data-hero] .halo-caption {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 8px 4px 3px;
-}
-
-[data-hero] .halo-caption-title {
-  flex: 1;
-  min-width: 0;
-  font-size: 12.5px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Stack: a spec tag — index, category, serif title, level meter */
-[data-hero] .halo-card--stack {
-  width: 224px;
-  padding: 14px var(--halo-pad) 13px 14px;
-}
-
-[data-hero] .halo-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-[data-hero] .halo-eyebrow-rule {
-  width: 14px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.6;
-}
-
-[data-hero] .halo-stack-title {
-  margin-top: 9px;
-  font-family: var(--halo-font-title);
-  font-size: 21px;
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-[data-hero] .halo-stack-title em {
-  font-style: italic;
-  color: var(--halo-fg-muted);
-}
-
-[data-hero] .halo-meter {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-[data-hero] .halo-meter-track {
-  position: relative;
-  flex: 1;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--halo-border);
-  overflow: hidden;
-}
-
-[data-hero] .halo-meter-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: var(--halo-fg);
-}
-
-/* Frame: hairline outline with crop marks, for depth */
-[data-hero] .halo-card--frame {
-  width: 150px;
-  height: 100px;
-  border: 1px dashed var(--halo-border-hover);
-}
-
-[data-hero] .halo-crop {
-  position: absolute;
-  width: 9px;
-  height: 9px;
-  border-color: var(--halo-frame-line);
-  border-style: solid;
-  border-width: 0;
-}
-
-[data-hero] .halo-crop--tl { left: -5px; top: -5px; border-left-width: 1px; border-top-width: 1px; }
-[data-hero] .halo-crop--tr { right: -5px; top: -5px; border-right-width: 1px; border-top-width: 1px; }
-[data-hero] .halo-crop--bl { left: -5px; bottom: -5px; border-left-width: 1px; border-bottom-width: 1px; }
-[data-hero] .halo-crop--br { right: -5px; bottom: -5px; border-right-width: 1px; border-bottom-width: 1px; }
-
-/* --- Bottom-Left & Bottom-Right Corner Signatures ------------------------ */
+/* --- Bottom bar: name ---------------------------------------------------------- */
 
 [data-hero] .hero-bottom-bar {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: var(--hero-pad-x);
+  right: var(--hero-pad-x);
+  bottom: clamp(20px, 5vh, 56px);
   z-index: 36;
-  padding: 0 24px 24px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  pointer-events: none;
-  box-sizing: border-box;
-}
-
-@media (min-width: 640px) {
-  [data-hero] .hero-bottom-bar {
-    padding: 0 clamp(32px, 5.5vw, 120px) clamp(28px, 9vh, 120px);
-  }
-}
-
-[data-hero] .hero-trust-block {
-  display: none;
-  flex-direction: column;
-  gap: 12px;
-  pointer-events: auto;
-}
-
-@media (min-width: 768px) {
-  [data-hero] .hero-trust-block {
-    display: flex;
-  }
-}
-
-[data-hero] .hero-trust-rule {
-  width: 26px;
-  height: 1px;
-  background: rgba(20, 20, 19, 0.24);
-}
-
-[data-hero] .hero-trust-copy {
-  font-size: clamp(13px, min(0.95vw, 1.7vh), 16px);
-  line-height: 1.42;
-  color: #767570;
-}
-
-[data-hero] .hero-clarity-block {
-  display: none;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  pointer-events: auto;
-}
-
-@media (min-width: 768px) {
-  [data-hero] .hero-clarity-block {
-    display: flex;
-  }
-}
-
-[data-hero] .hero-clarity-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-[data-hero] .hero-clarity-copy {
-  font-size: clamp(13px, min(0.95vw, 1.7vh), 16px);
-  line-height: 1.42;
-  color: #767570;
-}
-
-[data-hero] .hero-clarity-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Quiet pause/play control for the halo (WCAG 2.2.2) */
-[data-hero] .hero-orbit-toggle {
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(20, 20, 19, 0.1);
-  color: #767570;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-  transition: opacity 150ms ease-out, color 150ms ease-out;
-}
-
-[data-hero] .hero-orbit-toggle:hover {
-  opacity: 1;
-  color: #141413;
-}
-
-/* --- Mobile Menu Sheet (#hero-menu) -------------------------------------- */
-
-[data-hero-sheet] {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  box-sizing: border-box;
-  background: rgba(250, 249, 245, 0.96);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  color: #141413;
-  font-family: var(--font-sans);
-  padding: 24px 32px;
-  display: flex;
-  flex-direction: column;
-}
-
-[data-hero-sheet][hidden] {
-  display: none;
-}
-
-[data-hero-sheet] a {
-  color: inherit;
-  text-decoration: none;
-}
-
-[data-hero-sheet] .hero-sheet-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-[data-hero-sheet] .hero-sheet-close {
-  position: relative;
-}
-
-[data-hero-sheet] .hero-sheet-close span {
-  position: absolute;
-  width: 18px;
-  height: 1.5px;
-  background: #141413;
-}
-
-[data-hero-sheet] .hero-sheet-close span:first-child {
-  transform: rotate(45deg);
-}
-
-[data-hero-sheet] .hero-sheet-close span:last-child {
-  transform: rotate(-45deg);
-}
-
-[data-hero-sheet] .hero-sheet-nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-[data-hero-sheet] .hero-sheet-nav ul {
-  display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
   gap: 20px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  pointer-events: none;
+}
+[data-hero] .hero-corner-note {
+  font-size: 14px;
+  color: var(--hero-ink-faint);
+}
+[data-hero] .hero-headline-italic { white-space: nowrap; }
+
+/* --- Landscape phones and small tablets: same right-hand layout, wider column ------- */
+@media (min-aspect-ratio: 1/1) and (max-width: 1023.98px) {
+  [data-hero] .hero-header-copy { width: 54vw; }
+  [data-hero] .hero-headline { font-size: clamp(28px, 5.4vw, 52px); }
+  [data-hero] .hero-subtitle { font-size: clamp(13px, 1.7vw, 16px); }
 }
 
-[data-hero-sheet] .hero-sheet-nav a {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-weight: 400;
-  font-size: 40px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  text-transform: capitalize;
-  transition: opacity 150ms ease-out;
+/* --- Portrait and narrow screens -----------------------------------------
+   The crop already keeps me in view (object-position above). The copy moves to the bottom over
+   the dark bench, left-aligned, with a stronger bottom scrim; the side scrim goes away. */
+@media (max-aspect-ratio: 1/1) {
+  [data-hero] .hero-media-scrim {
+    background:
+      linear-gradient(to top, rgb(var(--hero-night) / 0.88) 0%, rgb(var(--hero-night) / 0.62) 30%, rgb(var(--hero-night) / 0) 60%),
+      linear-gradient(to bottom, rgb(var(--hero-night) / 0.3) 0%, rgb(var(--hero-night) / 0) 18%);
+  }
+  [data-hero] .hero-header-copy {
+    left: var(--hero-pad-x);
+    right: var(--hero-pad-x);
+    top: auto;
+    bottom: calc(clamp(20px, 5vh, 56px) + 64px);
+    translate: none;
+    width: auto;
+    max-width: 640px;
+    align-items: flex-start;
+    text-align: left;
+  }
+  [data-hero] .hero-headline { font-size: clamp(36px, 9.5vw, 72px); }
+  [data-hero] .hero-headline-line,
+  [data-hero] .hero-headline-italic { white-space: normal; }
+  [data-hero] .hero-subtitle { font-size: clamp(14px, 3.6vw, 17px); max-width: 32em; }
+  [data-hero] .hero-bottom-bar { justify-content: space-between; }
 }
 
-[data-hero-sheet] .hero-sheet-nav a:hover {
-  opacity: 0.65;
+@media (max-width: 639.98px) {
+  [data-hero] .hero-eyebrow { font-size: 11px; padding: 7px 12px; margin-bottom: 14px; }
+  [data-hero] .hero-subtitle { line-height: 1.55; }
+}
+
+/* Short landscape phones: keep everything inside the frame. */
+@media (max-height: 520px) and (orientation: landscape) {
+  [data-hero] .hero-eyebrow { display: none; }
+  [data-hero] .hero-headline { font-size: clamp(28px, 7vh, 44px); }
+  [data-hero] .hero-subtitle { display: none; }
 }
 
 /* --- Parallax out of the hero --------------------------------------------
-   Three depth groups, each moving down by a share of the scroll so it lags behind
-   the page by that much (bigger share = further away):
-     back     glow, stamp                                  0.45
-     subject  portrait, halo, side cards, connector lines  0.25  (one group, so the
-              lines stay attached to the halo)
-     front    headline + CTAs                              0.10  (leaves fastest, so it
-              never slides down over the face)
-   The bottom bar does not travel; it just fades.
-   Where the browser supports it, scroll-driven animations run this on the compositor,
-   locked to the scroll with no frame of lag. Elsewhere Hero.tsx publishes
-   --hero-scroll / --hero-progress and the fallback rules below read them.
-   Each layer uses a `translate` / `transform` slot its own animations leave free. */
+   The hero stays put; the scene motion-blurs and white streaks fly left (Hero.tsx). The overlays
+   drift left by their own share, nearer ones faster, and stay sharp:
+     back     local time                          -4vw
+     front    copy                                -10vw  (and fades)
+   The bottom bar does not travel, it just fades.
+   Where the browser supports it, scroll-driven animations run this on the compositor.
+   Elsewhere Hero.tsx publishes --hero-scroll / --hero-progress and the fallback rules read them.
+   Each layer uses a `translate` slot its own animations leave free (the copy's centring
+   translate is folded into the keyframes on wide screens). */
 [data-hero] { --hero-scroll: 0px; --hero-progress: 0; }
 
-@keyframes hero-px-back    { to { translate: 0 calc(100dvh * 0.45); } }
-@keyframes hero-px-subject { to { translate: 0 calc(100dvh * 0.25); } }
-@keyframes hero-px-card    { to { transform: translateY(calc(100dvh * 0.25)); } }
-@keyframes hero-px-front   { to { translate: 0 calc(100dvh * 0.1); } }
+@keyframes hero-px-back    { to { translate: -4vw 0; } }
+@keyframes hero-px-front   { to { translate: -10vw 0; } }
+@keyframes hero-px-front-c { from { translate: 0 -38%; } to { translate: -10vw -38%; } }
 @keyframes hero-px-fade    { to { opacity: 0; } }
 
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: scroll()) {
-    [data-hero] .hero-stage-glow,
     [data-hero] .hero-stamp,
-    [data-hero] .hero-figure,
-    [data-hero] .hero-connectors,
     [data-hero] .hero-header-copy,
     [data-hero] .hero-bottom-bar {
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: scroll(root block);
-      animation-range: 0 100dvh;
+      animation-range: 0 55dvh;
     }
-    [data-hero] .hero-stage-glow,
     [data-hero] .hero-stamp { animation-name: hero-px-back; }
-    [data-hero] .hero-figure { animation-name: hero-px-subject; }
-    [data-hero] .hero-connectors { animation-name: hero-px-subject, hero-px-fade; animation-range: 0 100dvh, 0 60dvh; }
-    /* Side cards keep their float on `translate`; parallax + fade go on `transform`/opacity. */
-    [data-hero] .hero-float-card--left,
-    [data-hero] .hero-float-card--right {
-      animation-name: hero-float-left, hero-px-card, hero-px-fade;
-      animation-duration: 5.8s, auto, auto;
-      animation-timing-function: ease-in-out, linear, linear;
-      animation-iteration-count: infinite, 1, 1;
-      animation-fill-mode: none, both, both;
-      animation-timeline: auto, scroll(root block), scroll(root block);
-      animation-range: normal, 0 100dvh, 0 60dvh;
-    }
-    [data-hero] .hero-float-card--right { animation-name: hero-float-right, hero-px-card, hero-px-fade; animation-duration: 6.4s, auto, auto; }
-    [data-hero] .hero-header-copy { animation-name: hero-px-front, hero-px-fade; animation-range: 0 100dvh, 0 55dvh; }
+    /* The copy stays readable while the speed builds, then fades (0.3 -> 0.42 screens). */
+    [data-hero] .hero-header-copy { animation-name: hero-px-front-c, hero-px-fade; animation-range: 0 55dvh, 30dvh 42dvh; }
     [data-hero] .hero-bottom-bar { animation-name: hero-px-fade; animation-range: 0 30dvh; }
   }
 
-  /* Fallback: driven by the custom properties Hero.tsx sets. */
   @supports not (animation-timeline: scroll()) {
-    [data-hero] .hero-stage-glow,
-    [data-hero] .hero-stamp { translate: 0 calc(var(--hero-scroll) * 0.45); }
-    [data-hero] .hero-figure,
-    [data-hero] .hero-connectors { translate: 0 calc(var(--hero-scroll) * 0.25); }
-    [data-hero] .hero-float-card { transform: translateY(calc(var(--hero-scroll) * 0.25)); }
-    [data-hero] .hero-header-copy { translate: 0 calc(var(--hero-scroll) * 0.1); }
-    [data-hero] .hero-float-card,
-    [data-hero] .hero-connectors { opacity: clamp(0, 1 - var(--hero-progress) * 1.65, 1); }
-    [data-hero] .hero-header-copy { opacity: clamp(0, 1 - var(--hero-progress) * 1.8, 1); }
+    [data-hero] { --hero-pan: clamp(0, var(--hero-progress) / 0.55, 1); }
+    [data-hero] .hero-stamp { translate: calc(var(--hero-pan) * -4vw) 0; }
+    [data-hero] .hero-header-copy { translate: calc(var(--hero-pan) * -10vw) -38%; }
+    [data-hero] .hero-header-copy { opacity: clamp(0, (0.42 - var(--hero-progress)) / 0.12, 1); }
     [data-hero] .hero-bottom-bar { opacity: clamp(0, 1 - var(--hero-progress) * 3.3, 1); }
   }
 }
 
-/* Transition into Skills (Hero.tsx + components/hero/CloudGust.tsx): the hero is pinned for half a
-   screen while it zooms out and the clouds roll in. Skills sits a little lower, so once the clouds
-   clear the visitor scrolls on into it, and it pops in as it arrives. */
-@media (prefers-reduced-motion: no-preference) {
-  .onepage-section[data-section="home"] { height: 165dvh; align-items: start; background: var(--background); }
-  .onepage-section[data-section="home"] > [data-hero] { position: sticky; top: 0; }
-  .onepage-section[data-section="skills"] { overflow: clip; }
+@media (prefers-reduced-motion: no-preference) and (max-aspect-ratio: 1/1) {
   @supports (animation-timeline: scroll()) {
-    .onepage-section[data-section="skills"] > * {
-      animation: hero-skills-pop linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 70dvh 130dvh;
-    }
+    [data-hero] .hero-header-copy { animation-name: hero-px-front, hero-px-fade; }
+  }
+  @supports not (animation-timeline: scroll()) {
+    [data-hero] .hero-header-copy { translate: calc(var(--hero-pan) * -10vw) 0; }
   }
 }
-@keyframes hero-skills-pop { from { scale: 1.15; opacity: 0.3; } to { scale: 1; opacity: 1; } }
+
+/* Transition into the intro (Hero.tsx + components/hero/HelloSweep.tsx): the hero is pinned for
+   65dvh while it pans left and "HELLO I'M REACH" sweeps across from the right. The intro overlaps
+   that pinned stretch (globals.css) and slides in from the right behind the sweep (Intro.tsx). */
+@media (prefers-reduced-motion: no-preference) {
+  .onepage-section[data-section="home"] { height: 165dvh; align-items: start; background: var(--background); overflow-x: clip; }
+  .onepage-section[data-section="home"] > [data-hero] { position: sticky; top: 0; }
+}
+
+/* --- HELLO I'M REACH sweep (components/hero/HelloSweep.tsx) ----------------------------------
+   One line, far taller than the screen is wide, crossing right to left over the hand-off. White
+   with difference blending: light over the dark video, dark over the cream intro. */
+.hello-sweep-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--background);
+  pointer-events: none;
+}
+.hello-sweep {
+  position: fixed;
+  inset: 0;
+  z-index: 41;
+  overflow: hidden;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+.hello-sweep-line {
+  position: absolute;
+  left: 100vw;
+  top: 50%;
+  margin: 0;
+  translate: 0 -50%;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: min(42vh, 34vw);
+  line-height: 0.85;
+  letter-spacing: -0.01em;
+  color: #fff;
+  will-change: transform;
+}

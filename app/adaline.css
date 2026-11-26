@@ -6,7 +6,7 @@
      keeps its own type.
    - Akkurat is a commercial font and is not hot-linked from adaline.ai; Inter stands in for it.
      Fragment Mono is the free Google font, loaded with next/font in app/layout.tsx.
-   - --nav-height is this site's navbar (3.5rem), not Adaline's 64px. */
+   - --nav-height is 0: this site has no navbar (Adaline's is 64px). */
 
 :root {
   --pebble-50: 251 253 246; --pebble-100: 239 242 232; --pebble-200: 224 229 213; --pebble-300: 197 204 182;
@@ -68,7 +68,7 @@
   .adaline {
     --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-mono: var(--font-fragment-mono), "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
-    --nav-height: 3.5rem;
+    --nav-height: 0px;
     background-color: rgb(var(--pebble-50));
     color: rgb(var(--pebble-900));
     font-family: var(--font-sans);

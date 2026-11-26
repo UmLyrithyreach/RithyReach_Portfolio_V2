@@ -8,7 +8,7 @@ import type { MouseEvent } from "react";
 import { scrollToTarget } from "@/lib/engine";
 import { ARROW_PATH } from "@/lib/footer/geometry";
 
-export const FOOTER_NAV = ["home", "skills", "works", "about", "contact"] as const;
+export const FOOTER_NAV = ["home", "intro", "works", "about", "contact"] as const;
 
 export default function FooterNav() {
   const go = (event: MouseEvent<HTMLAnchorElement>, id: string) => {

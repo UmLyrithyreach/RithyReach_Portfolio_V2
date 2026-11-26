@@ -1,11 +1,10 @@
 import Hero from "@/components/sections/Hero";
-import Skills from "@/components/sections/Skills";
-import Projects from "@/components/sections/Projects";
-import About from "@/components/sections/About";
-import Contact from "@/components/sections/Contact";
+import Intro from "@/components/sections/Intro";
+import Expertise from "@/components/sections/Expertise";
+import Works from "@/components/sections/Works";
+import Process from "@/components/sections/Process";
 import { Pager } from "@/components/shared/Pager";
 import { LoadingVeil } from "@/components/shared/LoadingVeil";
-import { ScrollRail } from "@/components/shared/ScrollRail";
 
 export default function HomePage() {
   return (
@@ -15,15 +14,14 @@ export default function HomePage() {
       <main>
         <Pager
           slides={[
-            { id: "home", label: "home", tone: "light", ownNav: true, node: <Hero /> },
-            { id: "skills", label: "skills", tone: "light", node: <Skills /> },
-            { id: "works", label: "works", tone: "light", node: <Projects /> },
-            { id: "about", label: "about", tone: "light", node: <About /> },
-            { id: "contact", label: "contact", tone: "dark", node: <Contact /> },
+            { id: "home", label: "home", node: <Hero /> },
+            { id: "intro", label: "intro", node: <Intro /> },
+            { id: "expertise", label: "expertise", node: <Expertise /> },
+            { id: "works", label: "works", node: <Works /> },
+            { id: "process", label: "process", node: <Process /> },
           ]}
         />
       </main>
-      <ScrollRail />
     </>
   );
 }

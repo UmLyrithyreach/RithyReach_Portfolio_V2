@@ -1,0 +1,118 @@
+{
+  "$comment": "What I can do for a company that hires me. Read by components/sections/Expertise.tsx and scripts/expertise-posters.mjs (which draws public/image/expertise/<id>.webp). The tunnel runs in this order; a 'project' entry is a project card (taken from lib/data.ts by its id) backing the service named in 'for'. After editing, run: node scripts/expertise-posters.mjs",
+  "cards": [
+    {
+      "kind": "service",
+      "id": "full-stack",
+      "title": "Full-stack web apps",
+      "pitch": "From database schema to deployed interface: React, Next.js, Node.js and PostgreSQL.",
+      "icon": "Layers",
+      "seenIn": [
+        "KhodKquiz",
+        "Automata",
+        "Samki"
+      ]
+    },
+    {
+      "kind": "project",
+      "id": "khodkquiz",
+      "for": "full-stack"
+    },
+    {
+      "kind": "service",
+      "id": "interactive-frontends",
+      "title": "Interactive frontends",
+      "pitch": "Motion, scroll and WebGL that make a product feel alive instead of templated.",
+      "icon": "MousePointerClick",
+      "seenIn": [
+        "ASIP Redesign",
+        "This site"
+      ]
+    },
+    {
+      "kind": "project",
+      "id": "portfolio-2",
+      "for": "interactive-frontends"
+    },
+    {
+      "kind": "service",
+      "id": "redesigns",
+      "title": "Website redesigns",
+      "pitch": "Take a dated site and rebuild it fast, responsive and memorable.",
+      "icon": "PenTool",
+      "seenIn": [
+        "ASIP Redesign"
+      ]
+    },
+    {
+      "kind": "project",
+      "id": "asip-redesign",
+      "for": "redesigns"
+    },
+    {
+      "kind": "service",
+      "id": "mobile",
+      "title": "Mobile apps",
+      "pitch": "Cross-platform Flutter apps backed by Firebase, for Android and iOS from one codebase.",
+      "icon": "Smartphone",
+      "seenIn": [
+        "Samki app",
+        "BlaBlahCar"
+      ]
+    },
+    {
+      "kind": "service",
+      "id": "ai",
+      "title": "AI features & agents",
+      "pitch": "LLM-powered features and multi-agent pipelines wired into real products.",
+      "icon": "BrainCircuit",
+      "seenIn": [
+        "SocialStorage",
+        "YouTubeKids Studio"
+      ]
+    },
+    {
+      "kind": "project",
+      "id": "samki-digital-market",
+      "for": "ai"
+    },
+    {
+      "kind": "service",
+      "id": "automation",
+      "title": "Automation & bots",
+      "pitch": "Bots and pipelines that take repetitive work off a team's plate.",
+      "icon": "Workflow",
+      "seenIn": [
+        "Telegram bot",
+        "Video pipeline"
+      ]
+    },
+    {
+      "kind": "service",
+      "id": "testing",
+      "title": "Testing & QA",
+      "pitch": "End-to-end tests with Playwright, so a release never breaks what already works.",
+      "icon": "FlaskConical",
+      "seenIn": [
+        "Playwright",
+        "This site"
+      ]
+    },
+    {
+      "kind": "project",
+      "id": "automata-simulation",
+      "for": "full-stack"
+    },
+    {
+      "kind": "service",
+      "id": "ci-cd",
+      "title": "CI/CD & deployment",
+      "pitch": "GitHub Actions pipelines and Vercel deploys that ship on every push.",
+      "icon": "Rocket",
+      "seenIn": [
+        "GitHub Actions",
+        "Vercel"
+      ]
+    }
+  ]
+}

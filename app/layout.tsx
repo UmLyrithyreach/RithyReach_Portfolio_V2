@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Oswald, Space_Grotesk, JetBrains_Mono, Playfair_Display, Inter, Fragment_Mono } from "next/font/google";
 import "./globals.css";
 import "./hero.css";
+import { SmoothScroll } from "@/components/shared/SmoothScroll";
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -54,6 +55,21 @@ export const metadata: Metadata = {
   authors: [{ name: "Reach" }],
 };
 
+/**
+ * Runs before the page paints: a refresh always starts at the top (the hero), never where the
+ * visitor was. Browsers restore the old scroll position on reload by default, which would drop
+ * the visitor mid-way through a pinned scroll scene. On a reload the #hash is dropped too, so it
+ * can't jump down either; a normal visit to a #link still goes to its section.
+ */
+const START_AT_TOP = `(function(){try{
+history.scrollRestoration="manual";
+var nav=performance.getEntriesByType("navigation")[0];
+if(nav&&nav.type==="reload"){
+if(location.hash)history.replaceState(null,"",location.pathname+location.search);
+window.scrollTo(0,0);
+window.addEventListener("load",function(){window.scrollTo(0,0);});
+}}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -64,7 +80,13 @@ export default function RootLayout({
       lang="en"
       className={`${spaceGrotesk.variable} ${oswald.variable} ${jetbrainsMono.variable} ${playfair.variable} ${inter.variable} ${fragmentMono.variable}`}
     >
-      <body>{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: START_AT_TOP }} />
+      </head>
+      <body>
+        <SmoothScroll />
+        {children}
+      </body>
     </html>
   );
 }

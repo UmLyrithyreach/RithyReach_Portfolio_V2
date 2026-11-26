@@ -5,6 +5,7 @@
 // step); the content is this portfolio's projects from lib/data. Tokens live in app/adaline.css.
 
 import * as React from "react";
+import { getLenis, scrollToY } from "@/lib/smooth-scroll";
 import {
   AnimatePresence,
   animate,
@@ -626,6 +627,7 @@ export default function WorksOverview({ scrollTo }: WorksOverviewProps) {
     const y = r.top + window.scrollY - window.innerHeight / 2 + (before + stepIndex) * (r.height / TOTAL) + 1;
     const easing = cubicBezier(...EASE_STRONG);
     if (scrollTo) { scrollTo(y, { duration: 0.7, easing }); return; }
+    if (getLenis()) { scrollToY(y, { duration: 0.7, easing }); return; }
     const from = window.scrollY, t0 = performance.now();
     const step = (now: number) => {
       const t = Math.min((now - t0) / 700, 1);

@@ -1,5 +1,7 @@
 // The motion engine: one rAF ticker, react-spring's solver, scroll triggers, the text engine.
 
+import { scrollToY } from "@/lib/smooth-scroll";
+
 export const SPRINGS = Object.freeze({
   REVEAL: { tension: 90, friction: 26 },
   ROW: { tension: 170, friction: 24 },
@@ -91,7 +93,7 @@ export function scrollToTarget(target: string | HTMLElement): void {
   const targetId = typeof target === "string" ? target : `#${target.id}`;
 
   if (targetId === "#home" || targetId === "#" || targetId === "") {
-    window.scrollTo({ top: 0, behavior: isReducedMotion() ? "auto" : "smooth" });
+    scrollToY(0);
     return;
   }
 
@@ -100,7 +102,7 @@ export function scrollToTarget(target: string | HTMLElement): void {
     const layer0 = stack?.querySelector("[data-stack-layer]");
     if (stack && layer0) {
       const top = stack.getBoundingClientRect().top + window.scrollY + (layer0 as HTMLElement).offsetHeight;
-      window.scrollTo({ top, behavior: isReducedMotion() ? "auto" : "smooth" });
+      scrollToY(top);
       return;
     }
   }
@@ -123,7 +125,7 @@ export function scrollToTarget(target: string | HTMLElement): void {
     top = el.getBoundingClientRect().top + window.scrollY - navOffset;
   }
 
-  window.scrollTo({ top, behavior: isReducedMotion() ? "auto" : "smooth" });
+  scrollToY(top);
 }
 
 export function readToken(name: string): string {

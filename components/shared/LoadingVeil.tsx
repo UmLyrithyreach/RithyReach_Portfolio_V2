@@ -25,7 +25,7 @@ export function LoadingVeil() {
       document.readyState === "complete"
         ? Promise.resolve()
         : new Promise<void>((resolve) => window.addEventListener("load", () => resolve(), { once: true }));
-    const portrait = document.querySelector<HTMLImageElement>(".hero-portrait-img");
+    const portrait = document.querySelector<HTMLImageElement>(".hero-media-poster");
     const ready = Promise.all([
       pageLoaded,
       document.fonts?.ready ?? Promise.resolve(),

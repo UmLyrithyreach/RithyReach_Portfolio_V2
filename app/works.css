@@ -2,8 +2,8 @@
    A scroll-pinned showcase on the cream ground (.skills-light flips the dark roles to cream/ink and
    --accent to green-700). Same vocabulary as Skills: Oswald heading in the accent, hairline dashed
    frames with square corner marks, mono captions. Green is only ever the accent.
-   Pinned (>= 1024px, motion allowed): .show-track is COUNT * 55svh tall and .show-stage sticks under
-   the 3.5rem navbar. Otherwise everything stacks, entries open, a figure under each. */
+   Pinned (>= 1024px, motion allowed): .show-track is COUNT * 55svh tall and .show-stage sticks to
+   the top of the screen. Otherwise everything stacks, entries open, a figure under each. */
 
 #works.show {
   --show-ink: var(--raw-color-ink-950);
@@ -57,13 +57,13 @@
   padding: 2.5rem var(--show-gutter) 4rem;
 }
 #works[data-pinned] .show-track {
-  height: calc(var(--count) * 55svh + 100svh - 3.5rem);
+  height: calc(var(--count) * 55svh + 100svh);
 }
 #works[data-pinned] .show-stage {
   position: sticky;
-  top: 3.5rem;
+  top: 0;
   box-sizing: border-box;
-  height: calc(100svh - 3.5rem);
+  height: 100svh;
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   column-gap: max(4cqw, 2.5rem);

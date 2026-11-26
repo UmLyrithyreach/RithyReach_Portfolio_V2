@@ -246,7 +246,6 @@ function Tests() {
   const tests = [
     "every section renders, exactly one h1",
     "each nav link scrolls to its section",
-    "mobile menu opens, Escape closes it",
     "skills list shows all 11 technologies",
     "project cards link to live and code",
     "contact links open in a new tab",

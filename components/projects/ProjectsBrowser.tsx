@@ -79,6 +79,7 @@ export function ProjectModal({
         exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
         transition={{ duration: reduceMotion ? 0 : 0.18, ease: "easeOut" }}
         onClick={(event) => event.stopPropagation()}
+        data-lenis-prevent
         className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto border border-border-dark bg-surface-dark p-6 text-on-dark shadow-2xl sm:p-8"
       >
         <CornerBrackets size="0.625rem" className="text-accent/60" />

@@ -189,7 +189,7 @@ const TRACKS: TrackEntry[] = [
         id: "e2e-tests",
         title: "Tested end to end",
         figure: "playwright run",
-        blurb: "Playwright drives this site in a real browser: every section, every nav link, the mobile menu and each project link.",
+        blurb: "Playwright drives this site in a real browser: every section, the skills list and each project link.",
         tags: ["Playwright", "TypeScript"],
         visual: { kind: "tests" },
       },
